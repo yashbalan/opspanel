@@ -20,6 +20,11 @@ from fractions import Fraction
 
 st.set_page_config(layout="wide", page_title="Hopcharge Dashboard", page_icon=":bar_chart:")
 
+# Hardcoded credentials
+USER_CREDENTIALS = {
+    "admin": "hopcharge@901",  # Add your username and password pairs here
+}
+
 
 # Function to clean license plates
 def clean_license_plate(plate):
@@ -62,18 +67,15 @@ def check_credentials():
         username = st.text_input("Username")
         password = st.text_input(
             "Password", type="password")
+
     flag = 0
-    if username in st.secrets["username"] and password in st.secrets["password"]:
-        index = st.secrets["username"].index(username)
-        if st.secrets["password"][index] == password:
-            st.session_state["logged_in"] = True
-            flag = 1
-        else:
-            col2.warning("Invalid username or password.")
-            flag = 0
-    elif username not in st.secrets["username"] or password not in st.secrets["password"]:
+    if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+        st.session_state["logged_in"] = True
+        flag = 1
+    else:
         col2.warning("Invalid username or password.")
         flag = 0
+
     ans = [username, flag]
     return ans
 
