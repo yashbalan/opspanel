@@ -1,2 +1,4 @@
-# opspanel
-Hopcharge API Based Operations Dashboard
+# HopCharge
+
+Hopcharge Dashboard for Operations Purposes:
+https://hopcharge.streamlit.app/
