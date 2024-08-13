@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build & Deploy
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOSTNAME: ${{ secrets.SSH_HOST }}
+          USER_NAME: ${{ secrets.USER_NAME }}
+          
+        run: |
+          # Create a private key file and set permissions
+          echo "$PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          
+          # Execute commands on the EC2 instance
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} << 'EOF'
+              # Navigate to the project directory
+              cd /home/ubuntu/opspos ||
+              {
+                echo "Project directory does not exist"; 
+                exit 1;
+              }
+              source bin/activate
+              cd opspanel
+              git pull https://github.com/yashbalan/opspanel.git
+              pip install -r req.txt
+              source ~/.nvm/nvm.sh &&
+              pm2 restart opspanel
+              
+              
+          EOF
+          # Clean up the private key file
+          rm private_key
